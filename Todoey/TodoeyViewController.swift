@@ -10,26 +10,60 @@ import UIKit
 
 class TodoeyViewController: UITableViewController {
     
-    let itemArray = ["Почистить кеды", "Купить молоко", "Пропылесосить"]
+    var itemArray = [String]()
+    let defaults = UserDefaults.standard /// Создаем хранилище для данных пользователя, обрашаться к хранилищу будем через defaults
     
-    @IBOutlet weak var nameLabel: UILabel!
     
     override func viewWillAppear(_ animated: Bool) {
+        
         let navigationBar = self.navigationController?.navigationBar
         navigationBar?.barStyle = UIBarStyle.black
-        navigationBar?.backgroundColor = .blue
+        navigationBar?.backgroundColor = UIColor(named: "UserColor")
     
         
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view. 
+        if let items = defaults.array(forKey: "TodoApp") as? [String] {  /// Если в хранилище есть элемент с ключом TodoApp то обновляем наш массив
+            itemArray = items
+        }
     }
+    
+    
+    
+//MARK: - кнопка + Нажата
+    
+    @IBAction func plusButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var text = UITextField()
+        let alert = UIAlertController(title: "Добавить новую задачу", message: "", preferredStyle: .alert) /// Создаем новый VIew controller с надписью
+        
+        alert.addTextField { UITextField in  /// Добавляем к предупреждению текстовое поле и передаем UITextFielld в качестве значения в замыкание
+            UITextField.placeholder = "Создать новый объект"
+            text = UITextField
+        }
+        
+        let action = UIAlertAction(title: "Добавить", style: .default) { (action) in /// Создаем действие которыое случится после того как пользователь нажмет кнопку добавить
+            print(text.text!)
+            if text.text != ""{
+                self.itemArray.append(text.text!)
+                self.tableView.reloadData() 
+                self.defaults.set(self.itemArray, forKey: "TodoApp") /// Добавляем в наше хранилище элемент item array т.к хранилище это слоаврь нужен еще и ключе TodoApp
+                
+            }
+        }
+        
+        alert.addAction(action) /// Вызываем действие
+        present(alert, animated: true, completion: nil) /// Презентуем новый View Controller
+        
+
+    }
+    
 
 
 }
-
+// MARK: - Создание ячеек
 
 extension TodoeyViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -44,5 +78,16 @@ extension TodoeyViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(itemArray[indexPath.row])
+        let cell = tableView.cellForRow(at: indexPath)
+        
+        if cell?.accessoryType == .checkmark   {
+            cell?.accessoryType = .none
+        }else{
+            cell?.accessoryType = .checkmark
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
+
+
+

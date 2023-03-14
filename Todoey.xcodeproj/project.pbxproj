@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CFAC8F6229BF4F7100D31946 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFAC8F6129BF4F7100D31946 /* Assets.xcassets */; };
-		CFAC8F6429BF4F8200D31946 /* 1663650401_2-phonoteka-org-p-galochka-bez-fona-oboi-3.png in Resources */ = {isa = PBXBuildFile; fileRef = CFAC8F6329BF4F8200D31946 /* 1663650401_2-phonoteka-org-p-galochka-bez-fona-oboi-3.png */; };
+		CFAC8F6429BF4F8200D31946 /* OkayImage in Resources */ = {isa = PBXBuildFile; fileRef = CFAC8F6329BF4F8200D31946 /* OkayImage */; };
 		EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4F9239524DB00FB933B /* AppDelegate.swift */; };
 		EB2BE4FE239524DB00FB933B /* TodoeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4FD239524DB00FB933B /* TodoeyViewController.swift */; };
 		EB2BE501239524DB00FB933B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB2BE4FF239524DB00FB933B /* Main.storyboard */; };
@@ -17,7 +17,7 @@
 
 /* Begin PBXFileReference section */
 		CFAC8F6129BF4F7100D31946 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		CFAC8F6329BF4F8200D31946 /* 1663650401_2-phonoteka-org-p-galochka-bez-fona-oboi-3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "1663650401_2-phonoteka-org-p-galochka-bez-fona-oboi-3.png"; sourceTree = SOURCE_ROOT; };
+		CFAC8F6329BF4F8200D31946 /* OkayImage */ = {isa = PBXFileReference; lastKnownFileType = file; path = OkayImage; sourceTree = SOURCE_ROOT; };
 		EB2BE4F6239524DB00FB933B /* Todoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2BE4F9239524DB00FB933B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EB2BE4FD239524DB00FB933B /* TodoeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoeyViewController.swift; sourceTree = "<group>"; };
@@ -61,7 +61,7 @@
 				EB2BE4FF239524DB00FB933B /* Main.storyboard */,
 				EB2BE504239524DC00FB933B /* LaunchScreen.storyboard */,
 				CFAC8F6129BF4F7100D31946 /* Assets.xcassets */,
-				CFAC8F6329BF4F8200D31946 /* 1663650401_2-phonoteka-org-p-galochka-bez-fona-oboi-3.png */,
+				CFAC8F6329BF4F8200D31946 /* OkayImage */,
 				EB2BE507239524DC00FB933B /* Info.plist */,
 			);
 			path = Todoey;
@@ -126,7 +126,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB2BE506239524DC00FB933B /* LaunchScreen.storyboard in Resources */,
-				CFAC8F6429BF4F8200D31946 /* 1663650401_2-phonoteka-org-p-galochka-bez-fona-oboi-3.png in Resources */,
+				CFAC8F6429BF4F8200D31946 /* OkayImage in Resources */,
 				CFAC8F6229BF4F7100D31946 /* Assets.xcassets in Resources */,
 				EB2BE501239524DB00FB933B /* Main.storyboard in Resources */,
 			);
