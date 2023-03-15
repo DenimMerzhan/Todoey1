@@ -7,15 +7,18 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoeyViewController: UITableViewController {
     
     var itemArray = [Item]()
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathExtension("Item.plist") /// Создаем файл в катологе документы на телефоне
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext /// в 1-х скобках () мы подключаемся к AppleDelegate как к объекту вместо того что бы его инициализировать например let appDelegate = AppDelegate (init ...) Далее мы взяли свойство context и приравняли к переменной
+    
     
     
     override func viewWillAppear(_ animated: Bool) {
         
+    
         let navigationBar = self.navigationController?.navigationBar
         navigationBar?.barStyle = UIBarStyle.black
         navigationBar?.backgroundColor = UIColor.systemMint
@@ -25,8 +28,7 @@ class TodoeyViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        loadItem() /// Загружаем данные который ввел пользователь из файла по URL dataFielPath
+        loadItem() /// Загружаем данные который ввел пользователь из базы данных
     }
     
     
@@ -45,9 +47,15 @@ class TodoeyViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Добавить", style: .default) { (action) in /// Создаем действие которыое случится после того как пользователь нажмет кнопку добавить
             
+
+            
             if text.text != ""{
-                self.itemArray.append(Item(title: text.text!, done: false)) /// Если пользователь что то ввел то добавляем новый элемент в массив
-                self.saveData(itemArray: self.itemArray) /// Перезаписываем все данные на новый массив
+                
+                let newItem = Item(context: self.context) /// объявляем новый контекст (промежуточная точка перед записью в базу данных Item)
+                newItem.title = text.text! /// Записываем в заголовок данные от пользователя
+                newItem.done = false
+                self.itemArray.append(newItem) /// Добавляем новый элемент в  массив
+                self.saveData() /// Добавляем наш контектст в базу данных Item
             }
         }
         
@@ -78,20 +86,22 @@ extension TodoeyViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath)
         
         let item = itemArray[indexPath.row]
         
+//        context.delete(itemArray[indexPath.row])
+//        itemArray.remove(at: indexPath.row)
+//        saveData()
+        
         if item.done  {  /// Если значение done = true т.е пользотватель уже поставил галочку то меняем на false
             item.done = false
-            saveData(itemArray: itemArray)
         }else{
             item.done = true
-            saveData(itemArray: itemArray)
         }
+        saveData()
         
 
-        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true) /// Убирает серое поле с выбраного элемента пользователем
     }
 }
 
@@ -100,28 +110,24 @@ extension TodoeyViewController {
 
 extension TodoeyViewController {
     
-    func saveData(itemArray: [Item]) {
-        
-        let encoder = PropertyListEncoder()  /// Объект, который кодирует экземпляры типов данных в список свойств
+    func saveData() {
         
         do{
-            let data = try encoder.encode(itemArray)  /// Кодирование нашего массива эелементов Item в формат plist
-            try data.write(to: dataFilePath!)   /// Попытка записать данные в наш файл
-            tableView.reloadData()
+            try context.save() /// Сохраняем данные в основном контейнере Item
         }catch{
-            print("Ошибка раскодировки данных, \(error)")
+            print("Ошибка сохранения данных - \(error)")
         }
         
+        tableView.reloadData()
         
     }
     
     func loadItem(){ /// Функция для загрузки данных из файла
-
-        if let data = try? Data(contentsOf: dataFilePath!){ /// Пытаемся открыть файл по указанному URL и записываем в data
-            let decoder = PropertyListDecoder() /// Создаем декодер
-            do{
-                itemArray = try decoder.decode([Item].self, from: data) /// Пытаем декодировать документ в тип [Item]
-            }catch {print("Ошибка при декодировании - \(error)")}
+        let requset: NSFetchRequest<Item> = Item.fetchRequest() /// NSFetchRequest<Item> - это строка нужна для указания тип данных которые мы извлекаем тоже самое как let text: String = " Hello World" . Fetch request - запрос на получение
+        do {
+            itemArray = try context.fetch(requset) /// Возвращает массив элементов указанного типа, соответствующих критериям запроса на выборку
+        } catch{
+            print("Ошибка получения данных - \(error )")
         }
     }
 }

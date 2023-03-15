@@ -10,7 +10,6 @@
 		CF5DFE1929C09B4B00EC297D /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CF5DFE1729C09B4B00EC297D /* DataModel.xcdatamodeld */; };
 		CFAC8F6229BF4F7100D31946 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFAC8F6129BF4F7100D31946 /* Assets.xcassets */; };
 		CFAC8F6429BF4F8200D31946 /* OkayImage in Resources */ = {isa = PBXBuildFile; fileRef = CFAC8F6329BF4F8200D31946 /* OkayImage */; };
-		CFAC8F6829C0498A00D31946 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFAC8F6729C0498A00D31946 /* Item.swift */; };
 		EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4F9239524DB00FB933B /* AppDelegate.swift */; };
 		EB2BE4FE239524DB00FB933B /* TodoeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4FD239524DB00FB933B /* TodoeyViewController.swift */; };
 		EB2BE501239524DB00FB933B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB2BE4FF239524DB00FB933B /* Main.storyboard */; };
@@ -21,7 +20,6 @@
 		CF5DFE1829C09B4B00EC297D /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		CFAC8F6129BF4F7100D31946 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CFAC8F6329BF4F8200D31946 /* OkayImage */ = {isa = PBXFileReference; lastKnownFileType = file; path = OkayImage; sourceTree = SOURCE_ROOT; };
-		CFAC8F6729C0498A00D31946 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		EB2BE4F6239524DB00FB933B /* Todoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2BE4F9239524DB00FB933B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EB2BE4FD239524DB00FB933B /* TodoeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoeyViewController.swift; sourceTree = "<group>"; };
@@ -60,7 +58,6 @@
 		CFAC8F6929C0498F00D31946 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				CFAC8F6729C0498A00D31946 /* Item.swift */,
 				CF5DFE1729C09B4B00EC297D /* DataModel.xcdatamodeld */,
 			);
 			path = Model;
@@ -171,7 +168,6 @@
 			files = (
 				EB2BE4FE239524DB00FB933B /* TodoeyViewController.swift in Sources */,
 				CF5DFE1929C09B4B00EC297D /* DataModel.xcdatamodeld in Sources */,
-				CFAC8F6829C0498A00D31946 /* Item.swift in Sources */,
 				EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
