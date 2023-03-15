@@ -14,6 +14,7 @@ class TodoeyViewController: UITableViewController {
     var itemArray = [Item]()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext /// в 1-х скобках () мы подключаемся к AppleDelegate как к объекту вместо того что бы его инициализировать например let appDelegate = AppDelegate (init ...) Далее мы взяли свойство context и приравняли к переменной
     
+    @IBOutlet weak var searchBar: UISearchBar!
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -28,7 +29,8 @@ class TodoeyViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadItem() /// Загружаем данные который ввел пользователь из базы данных
+        loadItem()/// Загружаем данные который ввел пользователь из базы данных
+        searchBar.delegate = self
     }
     
     
@@ -122,15 +124,52 @@ extension TodoeyViewController {
         
     }
     
-    func loadItem(){ /// Функция для загрузки данных из файла
-        let requset: NSFetchRequest<Item> = Item.fetchRequest() /// NSFetchRequest<Item> - это строка нужна для указания тип данных которые мы извлекаем тоже самое как let text: String = " Hello World" . Fetch request - запрос на получение
+    func loadItem(with request: NSFetchRequest<Item> = Item.fetchRequest()){ /// Функция для загрузки данных из файла, если при вызове функии не указать значение request то значение будет по умолчанию = Item.fetchRequest()
+    /// with это внешний параметр, нужен для простоты читаабельности кода и что бы код имел больший смысл на английском языке
+    /// NSFetchRequest<Item> - это строка нужна для указания тип данных которые мы извлекаем тоже самое как let text: String = " Hello World" . Fetch request - запрос на получение
+        
         do {
-            itemArray = try context.fetch(requset) /// Возвращает массив элементов указанного типа, соответствующих критериям запроса на выборку
+            itemArray = try context.fetch(request) /// Возвращает массив элементов указанного типа, соответствующих критериям запроса на выборку
         } catch{
             print("Ошибка получения данных - \(error )")
         }
+        tableView.reloadData()
     }
+    
+    
 }
-
-
+    
+    
+    
+    extension TodoeyViewController: UISearchBarDelegate {
+        
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { /// Когда нажата кнопка return в панеле поиска
+            
+        }
+        
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            
+            if searchBar.text == "" { /// Если поле пустое, то вызываем загрузку элементов с запросом по умолчанию который вытаскивает все элементы = Item из базы данных
+                loadItem()
+                DispatchQueue.main.async { /// На загрузку LoadItem нужно время, и пока он загружается клавиатура не исчезнет и Search Bar не откажается от своего статуса первоответчика, поэтому мы заставляем его работать парал ельно с загрузкой элементов т.е он сразу сработает
+                    searchBar.resignFirstResponder() /// Уведомляет этот объект о том, что его попросили отказаться от статуса первого ответившего в его окне.
+                }
+            }else{
+                let request: NSFetchRequest<Item> = Item.fetchRequest()
+                request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!) /// Для всех элементов Item надо найти тот элемент чей заголовок начинаеся с searchBat.text  [cd] -  отключает чувствительность к регистру (т.е hello  = Hello) и диакритическим знакам
+                
+                let sortDescriptor = NSSortDescriptor(key: "title", ascending: true) /// Создаем сортировку по заголовку, assning -  "восходящий" ставим true
+                var arrDescriptor = [NSSortDescriptor]()
+                arrDescriptor.append(sortDescriptor)
+                request.sortDescriptors = arrDescriptor  /// Добавляем в запрос нашу сортировку, т.к он ожидает архив мы передаем архив
+                
+                loadItem(with: request)
+            }
+        }
+        
+        
+        func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+            searchBar.resignFirstResponder()
+        }
+    }
 
