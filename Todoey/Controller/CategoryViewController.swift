@@ -11,7 +11,7 @@ import CoreData
 
 class CategoryViewController: UITableViewController {
     
-    var categoryArr = [Category]()
+    var categoryArr = [Category]() 
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext /// В Aple Delegate есть так называем контекст - временная зона в которой мы можем редактировать данные и после этого добавить контекст в контейнер базы данных через эту строчку мы хотим получить ссылку на контекст для взаимодействия с постоянным контейнером
     
     override func viewWillAppear(_ animated: Bool) {
@@ -57,7 +57,7 @@ class CategoryViewController: UITableViewController {
 }
 
 
-    // MARK: - Создание ячеек
+    // MARK: - Создание ячеек и их выбор
     
     extension CategoryViewController {
 
@@ -72,8 +72,19 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItems", sender: self)
         tableView.deselectRow(at: indexPath, animated: true)
+
     }
+        
+        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+            let destination = segue.destination as! TodoeyViewController /// Если новый View Controller можно понизить до TodoViewController то записываем TodoViewController в destination если нет выходим из функции
+            if let index = tableView.indexPathForSelectedRow {
+                destination.selectedCategory = categoryArr[index.row]
+            }
+          
+        }
+        
 
 }
 

@@ -11,6 +11,12 @@ import CoreData
 
 class TodoeyViewController: UITableViewController {
     
+    var selectedCategory : Category? {
+        didSet{  ///  Как только для переменной Category будет установленно значение все что внутри этих скобок выполнится
+            loadItem()
+        }
+    }
+    
     var itemArray = [Item]()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext /// в 1-х скобках () мы подключаемся к AppleDelegate как к объекту вместо того что бы его инициализировать например let appDelegate = AppDelegate (init ...) Далее мы взяли свойство context и приравняли к переменной
     
@@ -29,7 +35,6 @@ class TodoeyViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadItem()/// Загружаем данные который ввел пользователь из базы данных
         searchBar.delegate = self
     }
     
@@ -56,6 +61,7 @@ class TodoeyViewController: UITableViewController {
                 let newItem = Item(context: self.context) /// объявляем новый контекст (промежуточная точка перед записью в базу данных Item)
                 newItem.title = text.text! /// Записываем в заголовок данные от пользователя
                 newItem.done = false
+                newItem.parentCategory = self.selectedCategory /// Устанавливаем родительскую категорию которую мы выбрали в базе данных на текущую категорию
                 self.itemArray.append(newItem) /// Добавляем новый элемент в  массив
                 self.saveData() /// Добавляем наш контектст в базу данных Item
             }
@@ -83,7 +89,6 @@ extension TodoeyViewController {
         cell.textLabel?.text = item.title /// Берем номер строки для новой ячейки и выбираем из массива такой же индекс для того что бы записать текст из массива в новую ячейку
         
         cell.accessoryType = item.done ? .checkmark: .none /// Если значение done = true т.е пользотватель уже поставил галочку то убираем, если false то добавляем
-
         return cell
     }
     
@@ -100,6 +105,7 @@ extension TodoeyViewController {
         }else{
             item.done = true
         }
+        print(itemArray[indexPath.row].parentCategory?.name ?? "nil")
         saveData()
         
 
@@ -124,9 +130,20 @@ extension TodoeyViewController {
         
     }
     
-    func loadItem(with request: NSFetchRequest<Item> = Item.fetchRequest()){ /// Функция для загрузки данных из файла, если при вызове функии не указать значение request то значение будет по умолчанию = Item.fetchRequest()
+    func loadItem(with request: NSFetchRequest<Item> = Item.fetchRequest(),predicateSearch: NSPredicate? = nil){  /// Функция для загрузки данных из файла, если при вызове функии не указать значение request то значение будет по умолчанию = Item.fetchRequest()
     /// with это внешний параметр, нужен для простоты читаабельности кода и что бы код имел больший смысл на английском языке
     /// NSFetchRequest<Item> - это строка нужна для указания тип данных которые мы извлекаем тоже самое как let text: String = " Hello World" . Fetch request - запрос на получение
+        
+   
+        let predicateCategory = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!) /// Определение логических условий для ограничения поиска выборки или фильтрации в памяти. Мы должны выбрать все элементы если им их parentCategory = selectedCategory
+        
+        if predicateSearch != nil {
+            let compoinPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateCategory,predicateSearch!]) /// Составляем сложный предикат на поиск для этого нам нужен массив из предикатов
+            request.predicate = compoinPredicate /// Добавляем в сложный запрос предикат
+        }
+        else{
+            request.predicate = predicateCategory
+        }
         
         do {
             itemArray = try context.fetch(request) /// Возвращает массив элементов указанного типа, соответствующих критериям запроса на выборку
@@ -140,7 +157,9 @@ extension TodoeyViewController {
 }
     
     
-    
+//MARK: - Search Bar  и фильтрация данных
+
+
     extension TodoeyViewController: UISearchBarDelegate {
         
         func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { /// Когда нажата кнопка return в панеле поиска
@@ -151,10 +170,12 @@ extension TodoeyViewController {
             
             if searchBar.text == "" { /// Если поле пустое, то вызываем загрузку элементов с запросом по умолчанию который вытаскивает все элементы = Item из базы данных
                 loadItem()
+                
                 DispatchQueue.main.async { /// На загрузку LoadItem нужно время, и пока он загружается клавиатура не исчезнет и Search Bar не откажается от своего статуса первоответчика, поэтому мы заставляем его работать парал ельно с загрузкой элементов т.е он сразу сработает
                     searchBar.resignFirstResponder() /// Уведомляет этот объект о том, что его попросили отказаться от статуса первого ответившего в его окне.
                 }
             }else{
+                
                 let request: NSFetchRequest<Item> = Item.fetchRequest()
                 request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!) /// Для всех элементов Item надо найти тот элемент чей заголовок начинаеся с searchBat.text  [cd] -  отключает чувствительность к регистру (т.е hello  = Hello) и диакритическим знакам
                 
@@ -163,7 +184,7 @@ extension TodoeyViewController {
                 arrDescriptor.append(sortDescriptor)
                 request.sortDescriptors = arrDescriptor  /// Добавляем в запрос нашу сортировку, т.к он ожидает архив мы передаем архив
                 
-                loadItem(with: request)
+                loadItem(with: request,predicateSearch: request.predicate!)
             }
         }
         
