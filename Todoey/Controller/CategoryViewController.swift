@@ -7,12 +7,14 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
     
-    var categoryArr = [Category]() 
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext /// В Aple Delegate есть так называем контекст - временная зона в которой мы можем редактировать данные и после этого добавить контекст в контейнер базы данных через эту строчку мы хотим получить ссылку на контекст для взаимодействия с постоянным контейнером
+    let realm = try! Realm()
+    var categoryArr: Results<Category>? /// Results это тип данных как Масиисв или строка, только со своими особенностями
+    ///Результаты всегда отражают текущее состояние Realm в текущем потоке, в том числе во время транзакций записи в текущем потоке.
+    ///Этот контейнер автоматически обнавляется если что то изменяется
     
     override func viewWillAppear(_ animated: Bool) {
         
@@ -24,7 +26,7 @@ class CategoryViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadData()
+       loadData()
         
     }
     
@@ -42,11 +44,10 @@ class CategoryViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Добавить", style: .default) { UIAlertAction in /// Создаем действие после нажатия на кнопку добавить
             
-            let newCategory = Category(context: self.context)  /// Инициализирует подкласс управляемого объекта и вставляет его в указанный контекст управляемого объекта.
+            let newCategory = Category()
 
             newCategory.name = textField.text!
-            self.categoryArr.append(newCategory) /// Добавляем в наш массив новый элемент
-            self.saveData()
+            self.saveData(category: newCategory)
         }
         
         alert.addAction(action) /// Добавляем в наше оповещение действие
@@ -62,25 +63,29 @@ class CategoryViewController: UITableViewController {
     extension CategoryViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryArr.count
+        return categoryArr?.count ?? 1 /// Если не nill то воозвращаем count если nill то возвращаем 1
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        cell.textLabel?.text = categoryArr[indexPath.row].name
+        cell.textLabel?.text = categoryArr?[indexPath.row].name ?? "Нет категорий"
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "goToItems", sender: self)
+        if categoryArr?[indexPath.row].name != "Нет категорий" && categoryArr?[indexPath.row].name != nil {
+            performSegue(withIdentifier: "goToItems", sender: self)
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
         tableView.deselectRow(at: indexPath, animated: true)
 
     }
         
         override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+            
             let destination = segue.destination as! TodoeyViewController /// Если новый View Controller можно понизить до TodoViewController то записываем TodoViewController в destination если нет выходим из функции
             if let index = tableView.indexPathForSelectedRow {
-                destination.selectedCategory = categoryArr[index.row]
+                destination.selectedCategory = categoryArr?[index.row]
             }
           
         }
@@ -92,9 +97,11 @@ class CategoryViewController: UITableViewController {
 
 extension CategoryViewController {
     
-    func saveData(){
+    func saveData(category: Category){
         do {
-            try context.save()
+            try realm.write({
+                realm.add(category)
+            })
         }catch{
             print("Ошибка сохранения категорий - \(error)")
         }
@@ -103,13 +110,8 @@ extension CategoryViewController {
     
     func loadData(){
         
-        let request : NSFetchRequest<Category> = Category.fetchRequest() /// Создаем новый запрос на получение всех элементов из контейнера Category
+        categoryArr = realm.objects(Category.self) /// Вернуть все типы данного типа, хранящиеся в области
         
-        do{
-            categoryArr =  try context.fetch(request)
-        }catch{
-            print("Ошибка получения данных категорий - \(error)")
-        }
         tableView.reloadData()
     }
     

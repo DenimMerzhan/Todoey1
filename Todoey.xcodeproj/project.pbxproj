@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		948884340B1031B0E6373E0C /* Pods_Todoey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFE1F5C7B09DF80F98B7E90B /* Pods_Todoey.framework */; };
-		CF5DFE1929C09B4B00EC297D /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CF5DFE1729C09B4B00EC297D /* DataModel.xcdatamodeld */; };
+		CF3FFC2C29C4C47400C6EF41 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3FFC2B29C4C47400C6EF41 /* Item.swift */; };
+		CF3FFC2E29C4C49F00C6EF41 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3FFC2D29C4C49F00C6EF41 /* Category.swift */; };
 		CF74E3ED29C1DF8A0089F656 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF74E3EC29C1DF8A0089F656 /* CategoryViewController.swift */; };
 		CFAC8F6229BF4F7100D31946 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFAC8F6129BF4F7100D31946 /* Assets.xcassets */; };
 		CFAC8F6429BF4F8200D31946 /* OkayImage in Resources */ = {isa = PBXBuildFile; fileRef = CFAC8F6329BF4F8200D31946 /* OkayImage */; };
@@ -21,7 +22,8 @@
 /* Begin PBXFileReference section */
 		66C815106BCB500EC62434EA /* Pods-Todoey.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Todoey.debug.xcconfig"; path = "Target Support Files/Pods-Todoey/Pods-Todoey.debug.xcconfig"; sourceTree = "<group>"; };
 		CD3B5916159C8DA51560CF62 /* Pods-Todoey.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Todoey.release.xcconfig"; path = "Target Support Files/Pods-Todoey/Pods-Todoey.release.xcconfig"; sourceTree = "<group>"; };
-		CF5DFE1829C09B4B00EC297D /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
+		CF3FFC2B29C4C47400C6EF41 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		CF3FFC2D29C4C49F00C6EF41 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		CF74E3EC29C1DF8A0089F656 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		CFAC8F6129BF4F7100D31946 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CFAC8F6329BF4F8200D31946 /* OkayImage */ = {isa = PBXFileReference; lastKnownFileType = file; path = OkayImage; sourceTree = SOURCE_ROOT; };
@@ -83,7 +85,8 @@
 		CFAC8F6929C0498F00D31946 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				CF5DFE1729C09B4B00EC297D /* DataModel.xcdatamodeld */,
+				CF3FFC2D29C4C49F00C6EF41 /* Category.swift */,
+				CF3FFC2B29C4C47400C6EF41 /* Item.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -237,10 +240,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF3FFC2C29C4C47400C6EF41 /* Item.swift in Sources */,
 				CF74E3ED29C1DF8A0089F656 /* CategoryViewController.swift in Sources */,
 				EB2BE4FE239524DB00FB933B /* TodoeyViewController.swift in Sources */,
-				CF5DFE1929C09B4B00EC297D /* DataModel.xcdatamodeld in Sources */,
 				EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */,
+				CF3FFC2E29C4C49F00C6EF41 /* Category.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,19 +448,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		CF5DFE1729C09B4B00EC297D /* DataModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				CF5DFE1829C09B4B00EC297D /* DataModel.xcdatamodel */,
-			);
-			currentVersion = CF5DFE1829C09B4B00EC297D /* DataModel.xcdatamodel */;
-			path = DataModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = EB2BE4EE239524DB00FB933B /* Project object */;
 }

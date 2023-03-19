@@ -7,18 +7,18 @@
 //
 
 import UIKit
-import CoreData
-
+import RealmSwift
+ 
 class TodoeyViewController: UITableViewController {
     
+    let realm = try! Realm()
     var selectedCategory : Category? {
         didSet{  ///  Как только для переменной Category будет установленно значение все что внутри этих скобок выполнится
-            loadItem()
+//            loadItem()
         }
     }
     
-    var itemArray = [Item]()
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext /// в 1-х скобках () мы подключаемся к AppleDelegate как к объекту вместо того что бы его инициализировать например let appDelegate = AppDelegate (init ...) Далее мы взяли свойство context и приравняли к переменной
+    var itemContainer: Results<Item>?
     
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -35,7 +35,8 @@ class TodoeyViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        searchBar.delegate = self
+//        searchBar.delegate = self
+        loadItem()
     }
     
     
@@ -55,16 +56,23 @@ class TodoeyViewController: UITableViewController {
         let action = UIAlertAction(title: "Добавить", style: .default) { (action) in /// Создаем действие которыое случится после того как пользователь нажмет кнопку добавить
             
 
-            
+
             if text.text != ""{
                 
-                let newItem = Item(context: self.context) /// объявляем новый контекст (промежуточная точка перед записью в базу данных Item)
-                newItem.title = text.text! /// Записываем в заголовок данные от пользователя
-                newItem.done = false
-                newItem.parentCategory = self.selectedCategory /// Устанавливаем родительскую категорию которую мы выбрали в базе данных на текущую категорию
-                self.itemArray.append(newItem) /// Добавляем новый элемент в  массив
-                self.saveData() /// Добавляем наш контектст в базу данных Item
+                if let currentCategory = self.selectedCategory {
+                    do { try self.realm.write {
+                        
+                        let newItem = Item() /// объявляем новый контекст (промежуточная точка перед записью в базу данных Item)
+                        newItem.title = text.text! /// Записываем в заголовок данные от пользователя
+                        currentCategory.items.append(newItem) /// Добавляет указанный объект в конец списка. Добавляем наш item в List
+                    }
+                    }catch{
+                        print("Ошибка сохранения данных - \(error)")
+                    }
+                    self.tableView.reloadData()
+                }
             }
+            
         }
         
         alert.addAction(action) /// Вызываем действие
@@ -80,35 +88,39 @@ class TodoeyViewController: UITableViewController {
 
 extension TodoeyViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+        print(itemContainer?.count ?? 0)
+        return itemContainer?.count ?? 0
     }
-    
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoCell", for: indexPath) /// Указываем индефиактор и индекс по умолчанию
-        let item = itemArray[indexPath.row]
-        cell.textLabel?.text = item.title /// Берем номер строки для новой ячейки и выбираем из массива такой же индекс для того что бы записать текст из массива в новую ячейку
+
+        let item = itemContainer?[indexPath.row] ?? Item() /// Если в массиве itemArray данный элемент = nill то значение по умолчанию будет Item где title = Нет категорий а done = false по умолчанию
+        cell.textLabel?.text = item.title
+
         
-        cell.accessoryType = item.done ? .checkmark: .none /// Если значение done = true т.е пользотватель уже поставил галочку то убираем, если false то добавляем
+        cell.accessoryType = item.done ? .checkmark : .none /// Если done true то ставим checmark если false то none
         return cell
     }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        let item = itemArray[indexPath.row]
-        
-//        context.delete(itemArray[indexPath.row])
-//        itemArray.remove(at: indexPath.row)
-//        saveData()
-        
-        if item.done  {  /// Если значение done = true т.е пользотватель уже поставил галочку то меняем на false
-            item.done = false
-        }else{
-            item.done = true
-        }
-        print(itemArray[indexPath.row].parentCategory?.name ?? "nil")
-        saveData()
-        
 
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
+        if let item = itemContainer?[indexPath.row] {
+            
+            do {
+                try realm.write ({
+                    
+                    if item.done  {  /// Если значение done = true т.е пользотватель уже поставил галочку то меняем на false
+                        item.done = false
+                    }else{
+                        item.done = true
+                    }
+                    
+                })
+            }catch{}
+
+        }
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true) /// Убирает серое поле с выбраного элемента пользователем
     }
 }
@@ -117,80 +129,62 @@ extension TodoeyViewController {
 //MARK: - Функция сохранение данных и их чтение
 
 extension TodoeyViewController {
-    
-    func saveData() {
-        
+
+    func saveData(newItem: Item) {
+
         do{
-            try context.save() /// Сохраняем данные в основном контейнере Item
+            try realm.write({
+                realm.add(newItem)
+            }) /// Сохраняем данные в основном контейнере Item
         }catch{
             print("Ошибка сохранения данных - \(error)")
         }
+
+        tableView.reloadData()
+
+    }
+
+    
+    
+    func loadItem(){
+
+
+        itemContainer = selectedCategory?.items.sorted(byKeyPath: "title",ascending: true)/// Все элементы принадлежащие к выбранной категории
+        ///Возвращает результаты, содержащие объекты в коллекции, но отсортированные.
         
         tableView.reloadData()
-        
     }
-    
-    func loadItem(with request: NSFetchRequest<Item> = Item.fetchRequest(),predicateSearch: NSPredicate? = nil){  /// Функция для загрузки данных из файла, если при вызове функии не указать значение request то значение будет по умолчанию = Item.fetchRequest()
-    /// with это внешний параметр, нужен для простоты читаабельности кода и что бы код имел больший смысл на английском языке
-    /// NSFetchRequest<Item> - это строка нужна для указания тип данных которые мы извлекаем тоже самое как let text: String = " Hello World" . Fetch request - запрос на получение
-        
-   
-        let predicateCategory = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!) /// Определение логических условий для ограничения поиска выборки или фильтрации в памяти. Мы должны выбрать все элементы если им их parentCategory = selectedCategory
-        
-        if predicateSearch != nil {
-            let compoinPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateCategory,predicateSearch!]) /// Составляем сложный предикат на поиск для этого нам нужен массив из предикатов
-            request.predicate = compoinPredicate /// Добавляем в сложный запрос предикат
-        }
-        else{
-            request.predicate = predicateCategory
-        }
-        
-        do {
-            itemArray = try context.fetch(request) /// Возвращает массив элементов указанного типа, соответствующих критериям запроса на выборку
-        } catch{
-            print("Ошибка получения данных - \(error )")
-        }
-        tableView.reloadData()
-    }
-    
-    
+
+
 }
-    
-    
+
+
 //MARK: - Search Bar  и фильтрация данных
 
 
     extension TodoeyViewController: UISearchBarDelegate {
-        
+
         func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { /// Когда нажата кнопка return в панеле поиска
-            
+
         }
-        
+
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-            
+
             if searchBar.text == "" { /// Если поле пустое, то вызываем загрузку элементов с запросом по умолчанию который вытаскивает все элементы = Item из базы данных
                 loadItem()
-                
+
                 DispatchQueue.main.async { /// На загрузку LoadItem нужно время, и пока он загружается клавиатура не исчезнет и Search Bar не откажается от своего статуса первоответчика, поэтому мы заставляем его работать парал ельно с загрузкой элементов т.е он сразу сработает
                     searchBar.resignFirstResponder() /// Уведомляет этот объект о том, что его попросили отказаться от статуса первого ответившего в его окне.
                 }
             }else{
                 
-                let request: NSFetchRequest<Item> = Item.fetchRequest()
-                request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!) /// Для всех элементов Item надо найти тот элемент чей заголовок начинаеся с searchBat.text  [cd] -  отключает чувствительность к регистру (т.е hello  = Hello) и диакритическим знакам
+                itemContainer = itemContainer?.filter("title CONTAINS[cd] %@", searchBar.text!)
+                .sorted(byKeyPath: "title", ascending: true)/// cd - значит не чувствительны к регистру и диакретическому знаку. Фильтр означает что в заголовке содержится то что в searchBar.text и мы получаем все заголовки где это содержится
                 
-                let sortDescriptor = NSSortDescriptor(key: "title", ascending: true) /// Создаем сортировку по заголовку, assning -  "восходящий" ставим true
-                var arrDescriptor = [NSSortDescriptor]()
-                arrDescriptor.append(sortDescriptor)
-                request.sortDescriptors = arrDescriptor  /// Добавляем в запрос нашу сортировку, т.к он ожидает архив мы передаем архив
-                
-                loadItem(with: request,predicateSearch: request.predicate!)
+                tableView.reloadData()
+
             }
         }
-        
-        
-        func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-            searchBar.resignFirstResponder()
-        }
+
     }
 
