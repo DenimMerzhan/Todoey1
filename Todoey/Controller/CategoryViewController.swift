@@ -8,10 +8,11 @@
 
 import UIKit
 import RealmSwift
+import SwipeCellKit
 
 class CategoryViewController: UITableViewController {
     
-    let realm = try! Realm()
+     let realm = try! Realm() /// Иницилизируем новую точку доступа к нашей базе данных Realm
     var categoryArr: Results<Category>? /// Results это тип данных как Масиисв или строка, только со своими особенностями
     ///Результаты всегда отражают текущее состояние Realm в текущем потоке, в том числе во время транзакций записи в текущем потоке.
     ///Этот контейнер автоматически обнавляется если что то изменяется
@@ -21,12 +22,13 @@ class CategoryViewController: UITableViewController {
         let navigationBar = self.navigationController?.navigationBar
         navigationBar?.barStyle = UIBarStyle.black
         navigationBar?.backgroundColor = UIColor.systemMint
+        
+        loadData()
     }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       loadData()
         
     }
     
@@ -39,15 +41,17 @@ class CategoryViewController: UITableViewController {
         
         alert.addTextField { UITextField in  /// Создаем текстовое поле
             textField = UITextField
-            print("Yeah")
         }
         
         let action = UIAlertAction(title: "Добавить", style: .default) { UIAlertAction in /// Создаем действие после нажатия на кнопку добавить
             
-            let newCategory = Category()
-
-            newCategory.name = textField.text!
-            self.saveData(category: newCategory)
+            if textField.text != "" {
+                
+                let newCategory = Category()
+                
+                newCategory.name = textField.text!
+                self.saveData(category: newCategory)
+            }
         }
         
         alert.addAction(action) /// Добавляем в наше оповещение действие
@@ -67,8 +71,10 @@ class CategoryViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell") as! SwipeTableViewCell
         cell.textLabel?.text = categoryArr?[indexPath.row].name ?? "Нет категорий"
+        cell.detailTextLabel?.text = categoryArr?[indexPath.row].count ?? "0"
+        cell.delegate = self
         return cell
     }
     
@@ -114,5 +120,29 @@ extension CategoryViewController {
         
         tableView.reloadData()
     }
+    
+}
+
+//MARK: - SwipeTableView
+
+extension CategoryViewController : SwipeTableViewCellDelegate {
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeCellKit.SwipeActionsOrientation) -> [SwipeCellKit.SwipeAction]? {
+        
+        guard orientation == .right else { return nil }
+
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { SwipeAction, IndexPath in
+            
+            do{ try self.realm.write {
+                let allItem = self.realm.objects(Category.self)
+                print(allItem)
+//                self.realm.delete(self.categoryArr![indexPath.row])
+            }
+            }catch{ print("Ошибка удаления данных") }
+        }
+        deleteAction.image = UIImage(named: "delete")
+        return [deleteAction]
+    }
+
     
 }

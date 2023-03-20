@@ -9,8 +9,10 @@
 import Foundation
 import RealmSwift
 
-class Item: Object {
+class Item: Object { /// Создав класс класса Object  мы можем сохранять данные используя Realm
    @objc dynamic var title: String = "Нет категорий"
    @objc dynamic var done: Bool = false
-    var parentCategory = LinkingObjects(fromType: Category.self, property: "items")
+   @objc dynamic var dateCreated: Date?
+    
+    var parentCategory = LinkingObjects(fromType: Category.self, property: "items") /// Мы указываем обратную связь которая связывает каждый элемент обратно с родительской категорий  и мы говорим что категория будет Category и указываем имя свойства обратного отношения
 }

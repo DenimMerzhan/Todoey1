@@ -19,14 +19,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        print(Realm.Configuration.defaultConfiguration.fileURL!)
+        print(Realm.Configuration.defaultConfiguration.fileURL ?? "nil")
         
+//        let config = Realm.Configuration(schemaVersion: 3)
+//        Realm.Configuration.defaultConfiguration = config
         
-        do{
-             let realm = try Realm()
-        }catch{
-            print("Ошибка доступа к Realm \(error)")
-        }
+        let realm = try! Realm()
         
 
         

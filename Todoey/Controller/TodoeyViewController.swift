@@ -39,6 +39,18 @@ class TodoeyViewController: UITableViewController {
         loadItem()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        
+        if let  currentCategorry = selectedCategory {
+            print(itemContainer?.count ?? 0)
+            do {
+                try realm.write {
+                    currentCategorry.count = String(itemContainer?.count ?? 0)
+                }
+            }catch { print("Ошибка добавления count - \(error)")}
+        }
+    }
+    
     
     
 //MARK: - кнопка + Нажата
@@ -65,6 +77,7 @@ class TodoeyViewController: UITableViewController {
                         let newItem = Item() /// объявляем новый контекст (промежуточная точка перед записью в базу данных Item)
                         newItem.title = text.text! /// Записываем в заголовок данные от пользователя
                         currentCategory.items.append(newItem) /// Добавляет указанный объект в конец списка. Добавляем наш item в List
+                        newItem.dateCreated = Date()
                     }
                     }catch{
                         print("Ошибка сохранения данных - \(error)")
@@ -88,7 +101,6 @@ class TodoeyViewController: UITableViewController {
 
 extension TodoeyViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(itemContainer?.count ?? 0)
         return itemContainer?.count ?? 0
     }
 
@@ -149,7 +161,7 @@ extension TodoeyViewController {
     func loadItem(){
 
 
-        itemContainer = selectedCategory?.items.sorted(byKeyPath: "title",ascending: true)/// Все элементы принадлежащие к выбранной категории
+        itemContainer = selectedCategory?.items.sorted(byKeyPath: "dateCreated",ascending: false )/// Все элементы принадлежащие к выбранной категории
         ///Возвращает результаты, содержащие объекты в коллекции, но отсортированные.
         
         tableView.reloadData()
@@ -179,7 +191,7 @@ extension TodoeyViewController {
             }else{
                 
                 itemContainer = itemContainer?.filter("title CONTAINS[cd] %@", searchBar.text!)
-                .sorted(byKeyPath: "title", ascending: true)/// cd - значит не чувствительны к регистру и диакретическому знаку. Фильтр означает что в заголовке содержится то что в searchBar.text и мы получаем все заголовки где это содержится
+                .sorted(byKeyPath: "dateCreated", ascending:true) /// cd - значит не чувствительны к регистру и диакретическому знаку. Фильтр означает что в заголовке содержится то что в searchBar.text и мы получаем все заголовки где это содержится
                 
                 tableView.reloadData()
 
