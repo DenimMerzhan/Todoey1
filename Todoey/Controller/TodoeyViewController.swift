@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import SwipeCellKit
  
 class TodoeyViewController: UITableViewController {
     
@@ -105,8 +106,9 @@ extension TodoeyViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TodoCell", for: indexPath) /// Указываем индефиактор и индекс по умолчанию
-
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        
+        
         let item = itemContainer?[indexPath.row] ?? Item() /// Если в массиве itemArray данный элемент = nill то значение по умолчанию будет Item где title = Нет категорий а done = false по умолчанию
         cell.textLabel?.text = item.title
 
@@ -199,4 +201,7 @@ extension TodoeyViewController {
         }
 
     }
+
+
+
 
