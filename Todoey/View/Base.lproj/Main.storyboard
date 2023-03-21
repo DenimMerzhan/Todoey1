@@ -49,12 +49,18 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Items" id="VHV-xb-GR3">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="4Hu-PR-08Q">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <connections>
-                                <action selector="plusButtonPressed:" destination="DxK-SB-jY5" id="s0n-Fc-ard"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="add" id="4Hu-PR-08Q">
+                                <connections>
+                                    <action selector="plusButtonPressed:" destination="DxK-SB-jY5" id="s0n-Fc-ard"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="refresh" id="z9O-WY-EXc">
+                                <connections>
+                                    <action selector="refreshColorPressed:" destination="DxK-SB-jY5" id="hOL-8Z-0ZK"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <outlet property="searchBar" destination="FpQ-3w-Y8k" id="sKz-8p-Ygn"/>
@@ -71,7 +77,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="PWm-DY-bcQ">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" textLabel="efb-pt-c8Z" detailTextLabel="WrI-Ky-G7n" rowHeight="69" style="IBUITableViewCellStyleValue1" id="cR0-4d-dVS" customClass="SwipeTableViewCell" customModule="SwipeCellKit">
                                 <rect key="frame" x="0.0" y="50" width="393" height="69"/>
@@ -104,8 +110,12 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Todoey" id="Lqf-6v-7Yj">
+                        <barButtonItem key="leftBarButtonItem" systemItem="refresh" id="PgJ-TB-sl8">
+                            <connections>
+                                <action selector="refreshColor:" destination="Ate-sD-r8V" id="4uJ-Ij-OT7"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Add" id="tEO-PZ-2eI">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <action selector="addPressed:" destination="Ate-sD-r8V" id="cKP-H7-sKS"/>
                             </connections>
@@ -127,9 +137,9 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="jU4-ZN-oin">
                         <rect key="frame" x="0.0" y="59" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" systemColor="systemMintColor"/>
+                        <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <textAttributes key="largeTitleTextAttributes">
-                            <color key="textColor" red="0.083213464400000006" green="0.66316467999999995" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -145,9 +155,6 @@
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemMintColor">
-            <color red="0.0" green="0.7803921568627451" blue="0.74509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

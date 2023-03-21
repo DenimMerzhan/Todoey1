@@ -8,9 +8,16 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 class CategoryViewController: SwipeTableViewController {
     
+    let defaults = UserDefaults.standard
+    let color =  ColorWork()
+    var colorIndex = 0
+    
+    var viewColor = UIColor.flatSand().withAlphaComponent(0.05).lighten(byPercentage: 0.1)!
+    let rect = CGRect(x: 0, y: 0, width: 100, height: 800)
      let realm = try! Realm() /// Иницилизируем новую точку доступа к нашей базе данных Realm
     var categoryArr: Results<Category>? /// Results это тип данных как Масиисв или строка, только со своими особенностями
     ///Результаты всегда отражают текущее состояние Realm в текущем потоке, в том числе во время транзакций записи в текущем потоке.
@@ -18,17 +25,61 @@ class CategoryViewController: SwipeTableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         
+
         let navigationBar = self.navigationController?.navigationBar
-        navigationBar?.barStyle = UIBarStyle.black
-        navigationBar?.backgroundColor = UIColor.systemMint
+        navigationBar?.barStyle = UIBarStyle.default
+        navigationBar?.setBackgroundImage(UIImage(), for: .default)
+        navigationBar?.shadowImage = UIImage()
+        navigationBar?.isTranslucent = true
         
+        
+        if #available(iOS 11.0, *){
+            navigationBar?.prefersLargeTitles = true
+        }
+        
+       
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        colorIndex = defaults.integer(forKey: "ColorIndex")
+        refreshColor()
+        
+        tableView.separatorStyle = .none
         loadData()
     }
     
     
-    override func updateModel(at indexPath: IndexPath) {
+    
+//MARK: -  Удаление данных
+    
+    
+    
+    override func updateModel(at indexPath: IndexPath) { /// Переопределяем нашу функцию для обновления данных
+        
+        if let deleteCategory = categoryArr?[indexPath.row] {
+            do {try realm.write {
+                realm.delete(deleteCategory.items)
+                realm.delete(deleteCategory)
+            }
+            }catch{}
+        }
         
     }
+    
+    
+    
+    
+//MARK: - Обновление цвета
+    
+    
+    @IBAction func refreshColor(_ sender: UIBarButtonItem) {
+        colorIndex += 1
+        refreshColor()
+        defaults.set(colorIndex, forKey: "ColorIndex")
+        
+    }
+    
+    
     
 // MARK: - Добавление нового предмета
     
@@ -46,7 +97,6 @@ class CategoryViewController: SwipeTableViewController {
             if textField.text != "" {
                 
                 let newCategory = Category()
-                
                 newCategory.name = textField.text!
                 self.saveData(category: newCategory)
             }
@@ -70,18 +120,22 @@ class CategoryViewController: SwipeTableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath) /// Говорим что новая ячейка будет равна ячейке из супер класса которая уже имеет методы swipwe
         
         cell.textLabel?.text = categoryArr?[indexPath.row].name ?? "Нет категорий"
         cell.detailTextLabel?.text = categoryArr?[indexPath.row].count ?? "0"
+        
+        let newColor = viewColor.darken(byPercentage: 0.05 * CGFloat(indexPath.row))
+        cell.backgroundColor = newColor?.withAlphaComponent(CGFloat(indexPath.row + 1) / 10)
+
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if categoryArr?[indexPath.row].name != "Нет категорий" && categoryArr?[indexPath.row].name != nil {
+        
+        if categoryArr?[indexPath.row].name != "Нет категорий" {
             performSegue(withIdentifier: "goToItems", sender: self)
-            tableView.deselectRow(at: indexPath, animated: true)
         }
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -89,7 +143,7 @@ class CategoryViewController: SwipeTableViewController {
         
         override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
             
-            let destination = segue.destination as! TodoeyViewController /// Если новый View Controller можно понизить до TodoViewController то записываем TodoViewController в destination если нет выходим из функции
+            let destination = segue.destination as! TodoeyViewController
             if let index = tableView.indexPathForSelectedRow {
                 destination.selectedCategory = categoryArr?[index.row]
             }
@@ -120,11 +174,27 @@ extension CategoryViewController {
         
         tableView.reloadData()
     }
-    
-    
-        
 
-    
 }
 
+//MARK: - Обновление цвета
+
+extension CategoryViewController {
+    
+    func refreshColor(){
+     
+        if let newColor = color.refreshColor(colorIndex: colorIndex) {
+            viewColor = newColor
+            navigationController?.navigationBar.backgroundColor = newColor.lighten(byPercentage: 0.1).withAlphaComponent(0.02)
+           
+            
+            tableView.reloadData()
+            
+        }else {
+            colorIndex  = 0
+            refreshColor()
+        }
+        
+    }
+}
 

@@ -9,16 +9,26 @@
 import UIKit
 import RealmSwift
 import SwipeCellKit
+import ChameleonFramework
  
-class TodoeyViewController: UITableViewController {
+class TodoeyViewController: SwipeTableViewController {
+    
+    
+    let defaults = UserDefaults.standard
+    let color =  ColorWork()
+    var colorIndex = 0
+    var viewColor =  UIColor.white
+    
     
     let realm = try! Realm()
     var selectedCategory : Category? {
         didSet{  ///  Как только для переменной Category будет установленно значение все что внутри этих скобок выполнится
-//            loadItem()
+            colorIndex = selectedCategory!.color
+            refreshColor()
+            print(colorIndex)
         }
     }
-    
+    var currentColor: String?
     var itemContainer: Results<Item>?
     
     @IBOutlet weak var searchBar: UISearchBar!
@@ -26,31 +36,66 @@ class TodoeyViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         
-    
+        
+        
         let navigationBar = self.navigationController?.navigationBar
         navigationBar?.barStyle = UIBarStyle.black
-        navigationBar?.backgroundColor = UIColor.systemMint
+        navigationBar?.shadowImage = UIImage()
+        navigationBar?.backgroundColor = .white
+        navigationItem.title = selectedCategory!.name
+        
+        searchBar.isTranslucent = false
+        searchBar.backgroundImage = UIImage()
     
         
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        searchBar.delegate = self
+        searchBar.delegate = self
+        
+
+        tableView.separatorStyle = .none
         loadItem()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         
         if let  currentCategorry = selectedCategory {
-            print(itemContainer?.count ?? 0)
             do {
+                var countMain = 0
+                for i in 0...(itemContainer?.count ?? 0) - 1 {
+                    if itemContainer?[i].done == false {
+                        countMain += 1
+                    }
+                }
                 try realm.write {
-                    currentCategorry.count = String(itemContainer?.count ?? 0)
+                    currentCategorry.count = String(countMain)
+                    currentCategorry.color = colorIndex
                 }
             }catch { print("Ошибка добавления count - \(error)")}
         }
     }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        
+        if let deleteItem = itemContainer?[indexPath.row] {
+            do {try realm.write {
+                realm.delete(deleteItem)
+            }
+            }catch{}
+        }
+    }
+    
+    
+    
+    @IBAction func refreshColorPressed(_ sender: UIBarButtonItem) {
+        colorIndex += 1
+        refreshColor()
+    }
+    
+    
+    
     
     
     
@@ -79,6 +124,7 @@ class TodoeyViewController: UITableViewController {
                         newItem.title = text.text! /// Записываем в заголовок данные от пользователя
                         currentCategory.items.append(newItem) /// Добавляет указанный объект в конец списка. Добавляем наш item в List
                         newItem.dateCreated = Date()
+                        
                     }
                     }catch{
                         print("Ошибка сохранения данных - \(error)")
@@ -98,6 +144,9 @@ class TodoeyViewController: UITableViewController {
 
 
 }
+
+
+
 // MARK: - Создание ячеек
 
 extension TodoeyViewController {
@@ -111,6 +160,9 @@ extension TodoeyViewController {
         
         let item = itemContainer?[indexPath.row] ?? Item() /// Если в массиве itemArray данный элемент = nill то значение по умолчанию будет Item где title = Нет категорий а done = false по умолчанию
         cell.textLabel?.text = item.title
+        
+        let newColor = viewColor.darken(byPercentage: 0.04 * CGFloat(indexPath.row))
+        cell.backgroundColor = newColor?.withAlphaComponent(CGFloat(indexPath.row + 1) / 10)
 
         
         cell.accessoryType = item.done ? .checkmark : .none /// Если done true то ставим checmark если false то none
@@ -118,9 +170,8 @@ extension TodoeyViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+        
         if let item = itemContainer?[indexPath.row] {
-            
             do {
                 try realm.write ({
                     
@@ -165,7 +216,6 @@ extension TodoeyViewController {
 
         itemContainer = selectedCategory?.items.sorted(byKeyPath: "dateCreated",ascending: false )/// Все элементы принадлежащие к выбранной категории
         ///Возвращает результаты, содержащие объекты в коллекции, но отсортированные.
-        
         tableView.reloadData()
     }
 
@@ -201,6 +251,26 @@ extension TodoeyViewController {
         }
 
     }
+
+
+//MARK: - Обновление цвета
+
+extension TodoeyViewController {
+    
+    func refreshColor(){
+     
+        if let newColor = color.refreshColor(colorIndex: colorIndex) {
+            viewColor = newColor
+            
+            tableView.reloadData()
+            
+        }else {
+            colorIndex  = 0
+            refreshColor()
+        }
+        
+    }
+}
 
 
 
