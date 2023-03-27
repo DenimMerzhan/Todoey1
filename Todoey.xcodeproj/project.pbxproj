@@ -11,9 +11,8 @@
 		CF1EE73029C991DE00F12AA2 /* RandomColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1EE72F29C991DE00F12AA2 /* RandomColor.swift */; };
 		CF3FFC2C29C4C47400C6EF41 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3FFC2B29C4C47400C6EF41 /* Item.swift */; };
 		CF3FFC2E29C4C49F00C6EF41 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3FFC2D29C4C49F00C6EF41 /* Category.swift */; };
+		CF65F04129D17C7600B318DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF65F04029D17C7600B318DA /* Assets.xcassets */; };
 		CF74E3ED29C1DF8A0089F656 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF74E3EC29C1DF8A0089F656 /* CategoryViewController.swift */; };
-		CFAC8F6229BF4F7100D31946 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFAC8F6129BF4F7100D31946 /* Assets.xcassets */; };
-		CFAC8F6429BF4F8200D31946 /* OkayImage in Resources */ = {isa = PBXBuildFile; fileRef = CFAC8F6329BF4F8200D31946 /* OkayImage */; };
 		CFC176CB29C88A0A00FE4DF6 /* SwipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC176CA29C88A0A00FE4DF6 /* SwipeTableViewController.swift */; };
 		EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4F9239524DB00FB933B /* AppDelegate.swift */; };
 		EB2BE4FE239524DB00FB933B /* TodoeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4FD239524DB00FB933B /* TodoeyViewController.swift */; };
@@ -27,9 +26,8 @@
 		CF1EE72F29C991DE00F12AA2 /* RandomColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomColor.swift; sourceTree = "<group>"; };
 		CF3FFC2B29C4C47400C6EF41 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		CF3FFC2D29C4C49F00C6EF41 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		CF65F04029D17C7600B318DA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Todoey/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		CF74E3EC29C1DF8A0089F656 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
-		CFAC8F6129BF4F7100D31946 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		CFAC8F6329BF4F8200D31946 /* OkayImage */ = {isa = PBXFileReference; lastKnownFileType = file; path = OkayImage; sourceTree = SOURCE_ROOT; };
 		CFC176CA29C88A0A00FE4DF6 /* SwipeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeTableViewController.swift; sourceTree = "<group>"; };
 		CFE1F5C7B09DF80F98B7E90B /* Pods_Todoey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Todoey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2BE4F6239524DB00FB933B /* Todoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,9 +121,8 @@
 				CFAC8F6529C0494500D31946 /* Controller */,
 				CFAC8F6629C0494C00D31946 /* View */,
 				EB2BE504239524DC00FB933B /* LaunchScreen.storyboard */,
-				CFAC8F6129BF4F7100D31946 /* Assets.xcassets */,
-				CFAC8F6329BF4F8200D31946 /* OkayImage */,
 				EB2BE507239524DC00FB933B /* Info.plist */,
+				CF65F04029D17C7600B318DA /* Assets.xcassets */,
 			);
 			path = Todoey;
 			sourceTree = "<group>";
@@ -191,8 +188,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB2BE506239524DC00FB933B /* LaunchScreen.storyboard in Resources */,
-				CFAC8F6429BF4F8200D31946 /* OkayImage in Resources */,
-				CFAC8F6229BF4F7100D31946 /* Assets.xcassets in Resources */,
+				CF65F04129D17C7600B318DA /* Assets.xcassets in Resources */,
 				EB2BE501239524DB00FB933B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

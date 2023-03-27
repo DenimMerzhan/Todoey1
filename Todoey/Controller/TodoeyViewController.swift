@@ -16,16 +16,21 @@ class TodoeyViewController: SwipeTableViewController {
     
     let defaults = UserDefaults.standard
     let color =  ColorWork()
-    var colorIndex = 0
+    var countTextCell = Int()
+    
+    var colorIndex: Int = 0 {
+        didSet {
+            refreshColor()
+        }
+    }
     var viewColor =  UIColor.white
+    var rect = CGRectMake(0.0, 0.0, 250.0, 700.0)
     
     
     let realm = try! Realm()
     var selectedCategory : Category? {
         didSet{  ///  Как только для переменной Category будет установленно значение все что внутри этих скобок выполнится
             colorIndex = selectedCategory!.color
-            refreshColor()
-            print(colorIndex)
         }
     }
     var currentColor: String?
@@ -39,10 +44,11 @@ class TodoeyViewController: SwipeTableViewController {
         
         
         let navigationBar = self.navigationController?.navigationBar
-        navigationBar?.barStyle = UIBarStyle.black
-        navigationBar?.shadowImage = UIImage()
-        navigationBar?.backgroundColor = .white
-        navigationItem.title = selectedCategory!.name
+        navigationBar?.barStyle = UIBarStyle.default /// Белый фон, черный текст
+        navigationBar?.shadowImage = UIImage() /// Делаем что бы не было разделяющей полосы
+        
+        navigationBar?.tintColor = UIColor.black /// Кнопки черные
+        navigationItem.title = selectedCategory!.name /// Менямем название заголовка navigation bar
         
         searchBar.isTranslucent = false
         searchBar.backgroundImage = UIImage()
@@ -64,9 +70,11 @@ class TodoeyViewController: SwipeTableViewController {
         if let  currentCategorry = selectedCategory {
             do {
                 var countMain = 0
-                for i in 0...(itemContainer?.count ?? 0) - 1 {
-                    if itemContainer?[i].done == false {
-                        countMain += 1
+                if itemContainer!.count > 0 {
+                    for i in 0...(itemContainer?.count ?? 0) - 1 {
+                        if itemContainer?[i].done == false {
+                            countMain += 1
+                        }
                     }
                 }
                 try realm.write {
@@ -91,7 +99,6 @@ class TodoeyViewController: SwipeTableViewController {
     
     @IBAction func refreshColorPressed(_ sender: UIBarButtonItem) {
         colorIndex += 1
-        refreshColor()
     }
     
     
@@ -150,6 +157,7 @@ class TodoeyViewController: SwipeTableViewController {
 // MARK: - Создание ячеек
 
 extension TodoeyViewController {
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemContainer?.count ?? 0
     }
@@ -157,18 +165,20 @@ extension TodoeyViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
-        
         let item = itemContainer?[indexPath.row] ?? Item() /// Если в массиве itemArray данный элемент = nill то значение по умолчанию будет Item где title = Нет категорий а done = false по умолчанию
         cell.textLabel?.text = item.title
+        countTextCell = item.title.count
         
-        let newColor = viewColor.darken(byPercentage: 0.04 * CGFloat(indexPath.row))
+        let newColor = viewColor.darken(byPercentage: 0.05 * CGFloat(indexPath.row))
         cell.backgroundColor = newColor?.withAlphaComponent(CGFloat(indexPath.row + 1) / 10)
+//        cell.textLabel?.textColor = UIColor(contrastingBlackOrWhiteColorOn:cell.backgroundColor!, isFlat:true)
 
         
         cell.accessoryType = item.done ? .checkmark : .none /// Если done true то ставим checmark если false то none
         return cell
     }
-
+    
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if let item = itemContainer?[indexPath.row] {
@@ -261,12 +271,12 @@ extension TodoeyViewController {
      
         if let newColor = color.refreshColor(colorIndex: colorIndex) {
             viewColor = newColor
+            view.backgroundColor = UIColor(gradientStyle:.topToBottom, withFrame:rect, andColors:[viewColor,UIColor.white])
             
             tableView.reloadData()
             
         }else {
             colorIndex  = 0
-            refreshColor()
         }
         
     }

@@ -34,7 +34,12 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
         }
         deleteAction.image = UIImage(named: "delete")
         
-        return [deleteAction]
+        let changeAction = SwipeAction(style: .default, title: "Change") { SwipeAction, IndexPath in
+            self.changeText(indexPath: indexPath)
+        }
+        changeAction.image = UIImage(named: "arrow.clockwise")
+        
+        return [deleteAction,changeAction]
     }
     
     
@@ -47,6 +52,10 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
     }
     
      func updateModel(at indexPath: IndexPath){
+        
+    }
+    
+    func changeText(indexPath: IndexPath) {
         
     }
 

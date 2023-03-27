@@ -13,11 +13,16 @@ import ChameleonFramework
 class CategoryViewController: SwipeTableViewController {
     
     let defaults = UserDefaults.standard
+    var rect = CGRectMake(0.0, 0.0, 250.0, 700.0)
     let color =  ColorWork()
-    var colorIndex = 0
     
-    var viewColor = UIColor.flatSand().withAlphaComponent(0.05).lighten(byPercentage: 0.1)!
-    let rect = CGRect(x: 0, y: 0, width: 100, height: 800)
+    var colorIndex: Int = 0 {
+        didSet {
+            refreshColor()
+        }
+    }
+    
+    var viewColor = UIColor.flatSand()!
      let realm = try! Realm() /// Иницилизируем новую точку доступа к нашей базе данных Realm
     var categoryArr: Results<Category>? /// Results это тип данных как Масиисв или строка, только со своими особенностями
     ///Результаты всегда отражают текущее состояние Realm в текущем потоке, в том числе во время транзакций записи в текущем потоке.
@@ -29,8 +34,12 @@ class CategoryViewController: SwipeTableViewController {
         let navigationBar = self.navigationController?.navigationBar
         navigationBar?.barStyle = UIBarStyle.default
         navigationBar?.setBackgroundImage(UIImage(), for: .default)
+        view.backgroundColor = UIColor(gradientStyle:.topToBottom, withFrame:rect, andColors:[viewColor,UIColor.white])
+        
         navigationBar?.shadowImage = UIImage()
         navigationBar?.isTranslucent = true
+        
+        navigationBar?.tintColor = UIColor.black /// Кнопки черные
         
         
         if #available(iOS 11.0, *){
@@ -42,7 +51,6 @@ class CategoryViewController: SwipeTableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         colorIndex = defaults.integer(forKey: "ColorIndex")
-        refreshColor()
         
         tableView.separatorStyle = .none
         loadData()
@@ -68,13 +76,17 @@ class CategoryViewController: SwipeTableViewController {
     
     
     
+    override func changeText(indexPath: IndexPath) {
+        print("Yeaaah")
+    }
+ 
+    
     
 //MARK: - Обновление цвета
     
     
     @IBAction func refreshColor(_ sender: UIBarButtonItem) {
         colorIndex += 1
-        refreshColor()
         defaults.set(colorIndex, forKey: "ColorIndex")
         
     }
@@ -117,6 +129,7 @@ class CategoryViewController: SwipeTableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoryArr?.count ?? 1 /// Если не nill то воозвращаем count если nill то возвращаем 1
     }
+        
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -126,11 +139,16 @@ class CategoryViewController: SwipeTableViewController {
         cell.detailTextLabel?.text = categoryArr?[indexPath.row].count ?? "0"
         
         let newColor = viewColor.darken(byPercentage: 0.05 * CGFloat(indexPath.row))
-        cell.backgroundColor = newColor?.withAlphaComponent(CGFloat(indexPath.row + 1) / 10)
+        cell.backgroundColor = newColor?.withAlphaComponent(CGFloat(indexPath.row + 1)/10)
+        cell.textLabel?.textColor = UIColor(contrastingBlackOrWhiteColorOn:cell.backgroundColor!, isFlat:true)
+        
 
         
         return cell
     }
+
+        
+        
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -186,13 +204,13 @@ extension CategoryViewController {
         if let newColor = color.refreshColor(colorIndex: colorIndex) {
             viewColor = newColor
             navigationController?.navigationBar.backgroundColor = newColor.lighten(byPercentage: 0.1).withAlphaComponent(0.02)
+            view.backgroundColor = UIColor(gradientStyle:.topToBottom, withFrame:rect, andColors:[viewColor,UIColor.white])
            
             
             tableView.reloadData()
             
         }else {
             colorIndex  = 0
-            refreshColor()
         }
         
     }
