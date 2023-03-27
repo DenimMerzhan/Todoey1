@@ -97,6 +97,20 @@ class TodoeyViewController: SwipeTableViewController {
     
     
     
+    override func changeText(indexPath: IndexPath, text: String) {
+        if let changeCategory = itemContainer?[indexPath.row] {
+            do {try realm.write {
+                changeCategory.title = text
+            }
+            }catch{}
+            tableView.reloadData()
+        }
+    }
+    
+    override func nameTitle(at indexPath: IndexPath) -> String {
+        return itemContainer?[indexPath.row].title ?? ""
+    }
+    
     @IBAction func refreshColorPressed(_ sender: UIBarButtonItem) {
         colorIndex += 1
     }
@@ -171,7 +185,12 @@ extension TodoeyViewController {
         
         let newColor = viewColor.darken(byPercentage: 0.05 * CGFloat(indexPath.row))
         cell.backgroundColor = newColor?.withAlphaComponent(CGFloat(indexPath.row + 1) / 10)
-//        cell.textLabel?.textColor = UIColor(contrastingBlackOrWhiteColorOn:cell.backgroundColor!, isFlat:true)
+                if color.contrastColor(color: viewColor) == false {
+                    cell.textLabel?.textColor = UIColor(contrastingBlackOrWhiteColorOn:cell.backgroundColor!, isFlat:true)
+                }else if viewColor == UIColor.flatSand() {
+                    cell.textLabel?.textColor = .black
+                }
+
 
         
         cell.accessoryType = item.done ? .checkmark : .none /// Если done true то ставим checmark если false то none

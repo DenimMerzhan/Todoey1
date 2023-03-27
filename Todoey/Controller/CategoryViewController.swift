@@ -39,11 +39,11 @@ class CategoryViewController: SwipeTableViewController {
         navigationBar?.shadowImage = UIImage()
         navigationBar?.isTranslucent = true
         
-        navigationBar?.tintColor = UIColor.black /// Кнопки черные
+        navigationBar?.tintColor = UIColor.black
         
         
         if #available(iOS 11.0, *){
-            navigationBar?.prefersLargeTitles = true
+            navigationBar?.prefersLargeTitles = true /// Делаем большой заголовок Nav Bar
         }
         
        
@@ -62,7 +62,7 @@ class CategoryViewController: SwipeTableViewController {
     
     
     
-    override func updateModel(at indexPath: IndexPath) { /// Переопределяем нашу функцию для обновления данных
+    override func updateModel(at indexPath: IndexPath) { /// Переопределяем нашу функцию из SwipeVC для обновления данных
         
         if let deleteCategory = categoryArr?[indexPath.row] {
             do {try realm.write {
@@ -76,8 +76,18 @@ class CategoryViewController: SwipeTableViewController {
     
     
     
-    override func changeText(indexPath: IndexPath) {
-        print("Yeaaah")
+    override func changeText(indexPath: IndexPath,text: String) { /// Переопределяем нашу функцию из SwipeVC для обновления данных
+        if let changeCategory = categoryArr?[indexPath.row] {
+            do {try realm.write {
+                changeCategory.name = text
+            }
+            }catch{}
+            tableView.reloadData()
+        }
+    }
+    
+    override func nameTitle(at indexPath: IndexPath) -> String {
+        return categoryArr?[indexPath.row].name ?? ""
     }
  
     
@@ -87,7 +97,7 @@ class CategoryViewController: SwipeTableViewController {
     
     @IBAction func refreshColor(_ sender: UIBarButtonItem) {
         colorIndex += 1
-        defaults.set(colorIndex, forKey: "ColorIndex")
+        defaults.set(colorIndex, forKey: "ColorIndex") /// Сохраняем значение
         
     }
     
@@ -137,10 +147,16 @@ class CategoryViewController: SwipeTableViewController {
         
         cell.textLabel?.text = categoryArr?[indexPath.row].name ?? "Нет категорий"
         cell.detailTextLabel?.text = categoryArr?[indexPath.row].count ?? "0"
+        tableView.rowHeight = 70 /// Устанавливаем единый размер для ячеек
         
-        let newColor = viewColor.darken(byPercentage: 0.05 * CGFloat(indexPath.row))
-        cell.backgroundColor = newColor?.withAlphaComponent(CGFloat(indexPath.row + 1)/10)
-        cell.textLabel?.textColor = UIColor(contrastingBlackOrWhiteColorOn:cell.backgroundColor!, isFlat:true)
+        let newColor = viewColor.darken(byPercentage: 0.05 * CGFloat(indexPath.row)) /// Делаем цвет чуть темнее чем ViewColor
+        cell.backgroundColor = newColor?.withAlphaComponent(CGFloat(indexPath.row + 1)/10) /// Делаем следущюю ячейку менее прозрачной
+
+        if color.contrastColor(color: viewColor) == false { /// Если бэкраунд относится к цветам на которых хорошо срабатывает функция контраста
+            cell.textLabel?.textColor = UIColor(contrastingBlackOrWhiteColorOn:cell.backgroundColor!, isFlat:true)
+        }else if viewColor == UIColor.flatSand() { /// Если пустынный то ставим черный цвет текста т.к на нем он хорошо выглядит
+            cell.textLabel?.textColor = .black
+        }
         
 
         
@@ -201,10 +217,10 @@ extension CategoryViewController {
     
     func refreshColor(){
      
-        if let newColor = color.refreshColor(colorIndex: colorIndex) {
+        if let newColor = color.refreshColor(colorIndex: colorIndex) { /// Обращаемся к функции для получения следующего цвета
             viewColor = newColor
-            navigationController?.navigationBar.backgroundColor = newColor.lighten(byPercentage: 0.1).withAlphaComponent(0.02)
-            view.backgroundColor = UIColor(gradientStyle:.topToBottom, withFrame:rect, andColors:[viewColor,UIColor.white])
+            navigationController?.navigationBar.backgroundColor = newColor.lighten(byPercentage: 0.1).withAlphaComponent(0.02) /// Меняем цвет бэека у NavBAr
+            view.backgroundColor = UIColor(gradientStyle:.topToBottom, withFrame:rect, andColors:[viewColor,UIColor.white]) /// Меняем цвет бэека у VC
            
             
             tableView.reloadData()

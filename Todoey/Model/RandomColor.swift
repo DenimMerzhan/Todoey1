@@ -11,23 +11,23 @@ import ChameleonFramework
 
 struct ColorWork {
     
-    func randomColor() -> String {
-        let random = Int.random(in: 1..<4)
-        
-        print(random)
-        switch random {
-        case 1: return UIColor.flatPowderBlue().hexValue()
-        case 2: return UIColor.flatWhite().hexValue()
-        default: return UIColor.flatBlue().hexValue()
-            
+    func contrastColor(color: UIColor) -> Bool {  /// Те цвета на которых функция контрастного цвета работает плохо и мы их исключаем из контрастного цвета
+        let colorArr = [UIColor.flatPink(),FlatGreen(),UIColor.flatSand()]
+        if colorArr.contains(color) {
+            print("Yeah")
+            return true
+        }else {
+            return false
         }
-    
     }
     
     func refreshColor(colorIndex: Int) -> UIColor?{
         let arr = [UIColor.flatRed(),UIColor.flatOrange(),UIColor.flatYellow(),UIColor.flatSand(),UIColor.flatSkyBlue(),UIColor.flatForestGreen(),UIColor.flatBlue(),UIColor.flatCoffee(),UIColor.flatPink(),FlatWatermelon(),FlatMagenta(),FlatGreen(),FlatPurple()]
         if colorIndex > arr.count - 1 {
+            print(colorIndex)
             return nil
-        }else{return arr[colorIndex]}
+        }else{
+            print(colorIndex)
+            return arr[colorIndex]}
     }
 }
